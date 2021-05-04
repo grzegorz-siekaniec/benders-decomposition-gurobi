@@ -1,0 +1,115 @@
+{
+  "facilities": [
+    {
+      "name": "Denver",
+      "exists": false,
+      "buildCost": 375000,
+      "supply": 30000,
+      "transportCost": [
+        {
+          "customer": "c1",
+          "cost": 9
+        },
+        {
+          "customer": "c2",
+          "cost": 7
+        },
+        {
+          "customer": "c3",
+          "cost": 5
+        }
+      ]
+    },
+    {
+      "name": "Detroit",
+      "buildCost": 175000,
+      "supply": 10000,
+      "transportCost": [
+        {
+          "customer": "c1",
+          "cost": 5
+        },
+        {
+          "customer": "c2",
+          "cost": 2
+        },
+        {
+          "customer": "c3",
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "name": "Toledo",
+      "buildCost": 300000,
+      "supply": 20000,
+      "transportCost": [
+        {
+          "customer": "c1",
+          "cost": 4
+        },
+        {
+          "customer": "c2",
+          "cost": 3
+        },
+        {
+          "customer": "c3",
+          "cost": 4
+        }
+      ]
+    },
+    {
+      "name": "Kansas",
+      "buildCost": 500000,
+      "supply": 40000,
+      "transportCost": [
+        {
+          "customer": "c1",
+          "cost": 10
+        },
+        {
+          "customer": "c2",
+          "cost": 4
+        },
+        {
+          "customer": "c3",
+          "cost": 2
+        }
+      ]
+    },
+    {
+      "name": "Louis",
+      "exists": true,
+      "supply": 30000,
+      "transportCost": [
+        {
+          "customer": "c1",
+          "cost": 8
+        },
+        {
+          "customer": "c2",
+          "cost": 4
+        },
+        {
+          "customer": "c3",
+          "cost": 3
+        }
+      ]
+    }
+  ],
+  "customers" : [
+    {
+      "name": "c1",
+      "demand": 30000
+    },
+        {
+      "name": "c2",
+      "demand": 20000
+    },
+    {
+      "name": "c3",
+      "demand": 20000
+    }
+  ]
+}
+
