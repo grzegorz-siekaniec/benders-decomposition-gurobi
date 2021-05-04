@@ -3,7 +3,7 @@ import sys
 
 import gurobi as grb
 from input import InputData
-from single_facility_location_model import SingleModelBuilder
+from standalone_facility_location_model import SingleModelBuilder
 
 
 def main(argv=None):
