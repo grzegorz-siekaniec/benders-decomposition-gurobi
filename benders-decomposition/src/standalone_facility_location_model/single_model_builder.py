@@ -21,11 +21,15 @@ class SingleModelBuilder(object):
 
         self._build_columns()
         self._build_constraints()
+        self.model.update()
 
-        return SingleModel(self.model, self.facility_name_to_column, self.facility_customer_to_column)
+        facility_name_to_column = bidict(self.facility_name_to_column)
+        facility_customer_to_column = bidict(self.facility_customer_to_column)
+
+        return SingleModel(self.model, facility_name_to_column, facility_customer_to_column)
 
     def _build_facility_columns(self):
-        # build facility columns
+
         for facility in self.data.facilities:
 
             # facility already exists
@@ -80,7 +84,7 @@ class SingleModelBuilder(object):
             )
             rhs = customer.demand
             name = f'demand_{customer.name}'
-            row = self.model.addConstr(lhs >= rhs, name=name)
+            _row = self.model.addConstr(lhs >= rhs, name=name)
 
     def _build_columns(self):
         self._build_facility_columns()
