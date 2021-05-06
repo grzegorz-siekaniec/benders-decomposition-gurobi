@@ -49,30 +49,41 @@ def build_facility_columns(data: InputData, model: grb.Model) -> Dict[str, grb.V
 
 def build_supply_constraints(data: InputData,
                              model: grb.Model,
-                             facility_customer_to_column: Dict[Tuple[str, str], grb.Var],
-                             facility_name_to_column: Dict[str, grb.Var]) -> None:
+                             facility_customer_pair_to_column: Dict[Tuple[str, str], grb.Var],
+                             facility_name_to_column: Dict[str, grb.Var]) -> Dict[str, grb.Constr]:
 
+    facility_to_row = dict()
     for facility in data.facilities:
         lhs = [
-            facility_customer_to_column[(facility.name, customer_name)]
+            facility_customer_pair_to_column[(facility.name, customer_name)]
             for customer_name in facility.transport_cost.keys()
         ]
-        lhs.append(-1 * facility.supply * facility_name_to_column[facility.name])
+
+        facility_var = facility_name_to_column.get(facility.name, 1)
+        lhs.append(-1 * facility.supply * facility_var)
         lhs = grb.quicksum(lhs)
         name = f'supply_{facility.name}'
 
-        model.addConstr(lhs <= 0.0, name=name)
+        row = model.addConstr(lhs <= 0.0, name=name)
+        facility_to_row[facility.name] = row
+
+    return facility_to_row
 
 
 def build_demand_constraints(data: InputData,
                              model: grb.Model,
-                             facility_customer_to_column: Dict[Tuple[str, str], grb.Var]) -> None:
+                             facility_customer_pair_to_column: Dict[Tuple[str, str], grb.Var]) -> Dict[str, grb.Constr]:
 
+    customer_to_row = dict()
     for customer in data.customers:
         lhs = grb.quicksum([
-            facility_customer_to_column[(facility.name, customer.name)]
+            facility_customer_pair_to_column[(facility.name, customer.name)]
             for facility in data.facilities]
         )
         rhs = customer.demand
         name = f'demand_{customer.name}'
-        _row = model.addConstr(lhs >= rhs, name=name)
+        row = model.addConstr(lhs >= rhs, name=name)
+
+        customer_to_row[customer.name] = row
+
+    return customer_to_row
