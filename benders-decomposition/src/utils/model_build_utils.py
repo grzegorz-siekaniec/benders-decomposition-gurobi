@@ -72,7 +72,8 @@ def build_supply_constraints(data: InputData,
 
 def build_demand_constraints(data: InputData,
                              model: grb.Model,
-                             facility_customer_pair_to_column: Dict[Tuple[str, str], grb.Var]) -> Dict[str, grb.Constr]:
+                             facility_customer_pair_to_column: Dict[Tuple[str, str], grb.Var]) \
+        -> Dict[str, grb.Constr]:
 
     customer_to_row = dict()
     for customer in data.customers:

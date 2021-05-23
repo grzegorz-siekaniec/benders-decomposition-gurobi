@@ -20,7 +20,7 @@ class SubProblem(object):
 
     def set_supply_constraint_rhs(self, rhs_map):
         for location, val in rhs_map.items():
-            self.supply_constraints[location].setAttr(grb.GRB.Attr.RHS, val)
+            self.facility_to_supply_constraint[location].setAttr(grb.GRB.Attr.RHS, val)
 
     def solve(self):
         logging.info("Solving subproblem")

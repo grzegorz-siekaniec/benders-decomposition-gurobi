@@ -12,6 +12,11 @@ class InputData(object):
         self.facilities = facilities
         self.customers = customers
 
+    def supply(self, facility_name) -> float:
+        for facility in self.facilities:
+            if facility.name == facility_name:
+                return facility.supply
+
     @staticmethod
     def read(fn: str):
 

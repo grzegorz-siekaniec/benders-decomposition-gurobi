@@ -8,21 +8,20 @@ from utils.model_build_utils import build_facility_columns
 from .master_problem import MasterProblem
 
 
-class MasterProblemBuilder(object):
+class MasterProblemBuilder:
 
     def __init__(self, data: InputData):
         self.data = data
-        self.columns = {}
         self.name_to_column = dict()
         self.model = grb.Model("facility_location_master_problem")
-        self.facility_columns = []
+        self.aux_var_name = 'z'
 
     def build(self) -> Optional[MasterProblem]:
         try:
             self._build_model()
             self.model.Params.PreCrush = 1
             self.model.Params.lazyConstraints = 1
-            return MasterProblem(self.model, self.columns, self.facility_columns)
+            return MasterProblem(self.model, self.name_to_column, self.aux_var_name)
         except grb.GurobiError as ex:
             logging.exception("Gurobi %r" % ex)
         except Exception as ex:
@@ -40,28 +39,10 @@ class MasterProblemBuilder(object):
         self.name_to_column.update(facility_to_column)
         self.name_to_column[name] = var
 
-    def _build_facility_columns(self):
-
-        for facility in self.data.facilities:
-
-            # facility already exists
-            name = f'facility_{facility.name}'
-            lb, obj = (0.0, facility.build_cost) if not facility.exists else (1.0, 0)
-            var = self.model.addVar(
-                lb=lb,
-                ub=1.0,
-                obj=obj,
-                vtype=grb.GRB.BINARY,
-                name=name
-            )
-
-            self.columns[facility.name] = var
-            self.facility_columns.append(var)
-
     def _build_aux_column(self) -> Tuple[str, grb.Var]:
         lb = 0.0
         ub = grb.GRB.INFINITY
-        name = 'z'
+        name = self.aux_var_name
         obj = 1.0
         var = self.model.addVar(
             lb=lb,
