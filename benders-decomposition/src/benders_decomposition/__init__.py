@@ -1,1 +1,1 @@
-from .solver import solve_facility_problem_benders
+from .solver import solve_using_benders_decomposition

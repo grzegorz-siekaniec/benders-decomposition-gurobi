@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Callable, List
+from typing import Dict, Callable
 
 import gurobi as grb
 
@@ -30,11 +30,12 @@ class MasterProblem:
         self.count += 1
 
     def report_results(self):
+        logging.info("** Final results using Benders Decomposition **")
 
+        status = self.model.getAttr(grb.GRB.Attr.Status)
+        logging.info('Final problem status %s.', utils.get_status(status))
         obj_val = self.model.getAttr(grb.GRB.Attr.ObjVal)
-        logging.info("Final results using Benders!")
-        logging.info("--------------")
-        logging.info(f"Objective value: {obj_val}")
+        logging.info("Objective value: %f.", obj_val)
         logging.info("The facilities at the following locations should be built:")
         for var in self.model.getVars():
             if utils.is_non_zero(var.x):

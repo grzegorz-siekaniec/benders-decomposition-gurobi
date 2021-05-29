@@ -1,5 +1,6 @@
 import logging
 from typing import Dict, Union
+from timeit import default_timer as timer
 
 import gurobi as grb
 
@@ -11,16 +12,22 @@ from benders_decomposition.sub_problem_builder import SubProblemBuilder
 from input import InputData
 
 
-def solve_facility_problem_benders(data: InputData):
-    grb.setParam(grb.GRB.Param.OutputFlag, 0)
-    master_problem = MasterProblemBuilder(data).build()
-    sub_problem = SubProblemBuilder(data).build()
+def solve_using_benders_decomposition(input_data: InputData):
+    s = timer()
+    logging.info("[START] Solving warehouse location problem using Benders Decomposition.")
 
-    rhs = create_sub_problem_constraint_to_master_column_map(master_problem, sub_problem, data)
+    master_problem = MasterProblemBuilder(input_data).build()
+    sub_problem = SubProblemBuilder(input_data).build()
 
-    master_problem.register_callback(cb_benders(master_problem, sub_problem, rhs, data))
+    rhs = create_sub_problem_constraint_to_master_column_map(master_problem, sub_problem, input_data)
+
+    master_problem.register_callback(cb_benders(master_problem, sub_problem, rhs, input_data))
     master_problem.solve()
     master_problem.report_results()
+
+    e = timer()
+    logging.info("[END] Solving warehouse location problem using Benders Decomposition."
+                 f"It took {e - s} sec.")
 
 
 def create_sub_problem_constraint_to_master_column_map(master: MasterProblem,
@@ -29,7 +36,7 @@ def create_sub_problem_constraint_to_master_column_map(master: MasterProblem,
         -> Dict[grb.Constr, Union[grb.Var, float]]:
     rhs = dict()
     for facility_name, row in sub_problem.facility_to_supply_constraint.items():
-        rhs[row] = data.supply(facility_name) * master.name_to_column[facility_name]
+        rhs[row] = -data.supply(facility_name) * master.name_to_column[facility_name]
 
     for customer_name, row in sub_problem.customer_to_demand_constraint.items():
         rhs[row] = row.getAttr(grb.GRB.Attr.RHS)
@@ -58,7 +65,7 @@ def cb_benders(master: MasterProblem,
             mp_facility_values = model.cbGetSolution(facility_cols)
             facility_names = master.facility_to_column.keys()
 
-            sub_problem_rhs = {facility_name: data.supply(facility_name) if utils.is_non_zero(val) else 0.0
+            sub_problem_rhs = {facility_name: -data.supply(facility_name) if utils.is_non_zero(val) else 0.0
                                for facility_name, val in zip(facility_names, mp_facility_values)}
 
             subproblem.set_supply_constraint_rhs(sub_problem_rhs)
@@ -66,7 +73,7 @@ def cb_benders(master: MasterProblem,
             # Solve sub-problem
             subproblem.solve()
 
-            logging.info(f'Subproblem status: {subproblem.model.getAttr(grb.GRB.Attr.Status)}')
+            logging.debug(f'Subproblem status: {subproblem.model.getAttr(grb.GRB.Attr.Status)}')
 
             # Add cuts (lazy constraints) based on sub-problem status
             if subproblem.status() == grb.GRB.Status.INFEASIBLE:
@@ -83,7 +90,7 @@ def cb_benders(master: MasterProblem,
                     logging.debug(f'{customer_name}: {dual_farkas}')
                     cut.append(dual_farkas * subproblem_constraints_to_master_columns[row])
 
-                logging.debug("Adding lazy constraint: ", grb.quicksum(cut) >= 0)
+                logging.debug("Adding feasibility cut: ", grb.quicksum(cut) >= 0)
                 model.cbLazy(grb.quicksum(cut) >= 0)
 
             elif subproblem.status() == grb.GRB.Status.OPTIMAL:
@@ -103,6 +110,6 @@ def cb_benders(master: MasterProblem,
 
                     cut.append(-z)
                     model.cbLazy(grb.quicksum(cut) <= 0)
-                    logging.debug("Adding lazy constraint: ", grb.quicksum(cut) <= 0)
+                    logging.debug("Adding optimality cut: ", grb.quicksum(cut) <= 0)
 
     return callback_inner

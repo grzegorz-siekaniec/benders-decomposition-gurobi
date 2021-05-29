@@ -39,7 +39,8 @@ def build_facility_columns(data: InputData, model: grb.Model) -> Dict[str, grb.V
             ub=1.0,
             obj=obj,
             vtype=grb.GRB.BINARY,
-            name=name
+            name=name,
+            column=None
         )
 
         facility_name_to_column[facility.name] = var
@@ -55,16 +56,16 @@ def build_supply_constraints(data: InputData,
     facility_to_row = dict()
     for facility in data.facilities:
         lhs = [
-            facility_customer_pair_to_column[(facility.name, customer_name)]
+            -facility_customer_pair_to_column[(facility.name, customer_name)]
             for customer_name in facility.transport_cost.keys()
         ]
 
         facility_var = facility_name_to_column.get(facility.name, 1)
-        lhs.append(-1 * facility.supply * facility_var)
+        lhs.append(1 * facility.supply * facility_var)
         lhs = grb.quicksum(lhs)
         name = f'supply_{facility.name}'
 
-        row = model.addConstr(lhs <= 0.0, name=name)
+        row = model.addConstr(lhs >= 0.0, name=name)
         facility_to_row[facility.name] = row
 
     return facility_to_row

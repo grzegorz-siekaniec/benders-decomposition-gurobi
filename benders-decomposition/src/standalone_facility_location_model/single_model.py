@@ -29,8 +29,7 @@ class SingleModel(object):
     def report_results(self):
         obj_val = self.model.getAttr(grb.GRB.Attr.ObjVal)
 
-        logging.info("Final results!")
-        logging.info("--------------")
+        logging.info("** Final results using standalone model! **")
         logging.info(f"Objective value: {obj_val}")
         logging.info("The facilities at the following locations should be built:")
         for var in self.model.getVars():

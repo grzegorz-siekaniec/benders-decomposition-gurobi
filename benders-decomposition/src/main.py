@@ -3,17 +3,15 @@ import sys
 
 import gurobi as grb
 
-from benders_decomposition.solver import solve_facility_problem_benders
 from input import InputData
-from standalone_facility_location_model import SingleModelBuilder
+from benders_decomposition.solver import solve_using_benders_decomposition
+from standalone_facility_location_model import solve_using_standalone_model
 
-# http://people.brunel.ac.uk/~mastjjb/jeb/orlib/files/cap41.txt
 
-
-def main(argv=None):
+def main():
 
     try:
-        input = InputData.read(
+        input_data = InputData.read(
             r'/home/gsiekaniec/git_repos/personal/operations-research/benders-decomposition-gurobi/benders-decomposition/data/rk_martin_ex_10_8.json')
 
         fm_with_date = '%(asctime)s %(levelname)s: %(message)s'
@@ -21,17 +19,15 @@ def main(argv=None):
         logging.basicConfig(format=fmt_basic,
                             datefmt='%Y/%m/%d %I:%M:%S %p',
                             level=logging.INFO)
+        # solving facility problem
 
-        single_model = SingleModelBuilder(input).build()
-        single_model.write()
-        single_model.solve()
-        single_model.report_results()
+        solve_using_standalone_model(input_data)
+        solve_using_benders_decomposition(input_data)
 
-        solve_facility_problem_benders(input)
-
-    except grb.GurobiError as ex:
+    except grb.GurobiError:
         logging.exception("Gurobi exception thrown")
-    except Exception as ex:
+        sys.exit(1)
+    except Exception:
         logging.exception("Exception occurred")
         sys.exit(1)
 
