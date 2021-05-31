@@ -16,4 +16,4 @@ def solve_using_standalone_model(input_data: InputData):
 
     e = timer()
     logging.info("[END] solving warehouse location problem using standalone model."
-                 f"It took {e - s} sec.")
+                 "It took %f sec.", e - s)

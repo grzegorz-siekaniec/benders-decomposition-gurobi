@@ -53,6 +53,15 @@ def build_supply_constraints(data: InputData,
                              facility_customer_pair_to_column: Dict[Tuple[str, str], grb.Var],
                              facility_name_to_column: Dict[str, grb.Var]) -> Dict[str, grb.Constr]:
 
+    """
+    Build constraints s_i y_i - \sum_{j=0}^{m} x_ij >= 0, for all i = 1, ..., n
+    :param data:
+    :param model:
+    :param facility_customer_pair_to_column:
+    :param facility_name_to_column:
+    :return:
+    """
+
     facility_to_row = dict()
     for facility in data.facilities:
         lhs = [

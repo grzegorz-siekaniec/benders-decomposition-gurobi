@@ -27,7 +27,7 @@ def solve_using_benders_decomposition(input_data: InputData):
 
     e = timer()
     logging.info("[END] Solving warehouse location problem using Benders Decomposition."
-                 f"It took {e - s} sec.")
+                 "It took %f sec.", e - s)
 
 
 def create_sub_problem_constraint_to_master_column_map(master: MasterProblem,

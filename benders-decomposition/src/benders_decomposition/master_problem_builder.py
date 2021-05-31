@@ -21,6 +21,7 @@ class MasterProblemBuilder:
             self._build_model()
             self.model.Params.PreCrush = 1
             self.model.Params.lazyConstraints = 1
+            # use bidict here!
             return MasterProblem(self.model, self.name_to_column, self.aux_var_name)
         except grb.GurobiError as ex:
             logging.exception("Gurobi %r" % ex)

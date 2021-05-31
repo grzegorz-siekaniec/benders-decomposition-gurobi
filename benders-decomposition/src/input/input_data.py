@@ -5,7 +5,7 @@ from .customer import Customer
 from .facility import Facility
 
 
-class InputData(object):
+class InputData:
 
     def __init__(self, facilities: List[Facility], customers: List[Customer]):
 

@@ -9,7 +9,7 @@ from standalone_facility_location_model import solve_using_standalone_model
 
 
 def main():
-
+    # TODO: add passing file containing input data and type of solver
     try:
         input_data = InputData.read(
             r'/home/gsiekaniec/git_repos/personal/operations-research/benders-decomposition-gurobi/benders-decomposition/data/rk_martin_ex_10_8.json')
