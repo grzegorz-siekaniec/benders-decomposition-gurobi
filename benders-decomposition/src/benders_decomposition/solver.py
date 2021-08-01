@@ -34,7 +34,7 @@ def create_sub_problem_constraint_to_master_column_or_value_map(master: MasterPr
                                                                 data: InputData)\
         -> Dict[grb.Constr, Union[grb.Var, float]]:
     """
-    Creates a mapping between sub-problem constraint and elements of (b - By).
+    Creates a mapping between sub-problem constraint and components of (b - By).
     :param master: instance of MasterProblem
     :param sub_problem: instance of Subproblem
     :param data: input data
@@ -58,7 +58,7 @@ def cb_benders(master: MasterProblem,
     Benders Decomposition callback
     :param master: instance of MasterProblem
     :param sub_problem: instance of SubProblem
-    :param mapping: mapping between sub-problem constraint and and elements of (b - By) vector.
+    :param mapping: mapping between sub-problem constraint and and components of (b - By) vector.
     :param data: input data
     :return: inner callback function.
     """
