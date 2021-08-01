@@ -30,7 +30,7 @@ def main():
         # solving facility problem
         input_data = InputData.read(args.input_data)
         use_standalone_model = args.method in {'standalone', 'both'}
-        use_benders_decomposition= args.method in {'benders_decomposition', 'both'}
+        use_benders_decomposition = args.method in {'benders_decomposition', 'both'}
 
         if use_standalone_model:
             solve_using_standalone_model(input_data)
@@ -39,7 +39,7 @@ def main():
 
     except argparse.ArgumentError:
         logging.exception('Exception raised during parsing arguments')
-        sys.exit(1)
+        sys.exit(2)
     except grb.GurobiError:
         logging.exception("Gurobi exception thrown")
         sys.exit(1)

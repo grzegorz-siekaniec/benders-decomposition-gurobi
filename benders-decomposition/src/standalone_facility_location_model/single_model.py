@@ -7,7 +7,7 @@ from bidict import bidict
 from utils import is_non_zero
 
 
-class SingleModel(object):
+class SingleModel:
 
     def __init__(self,
                  model: grb.Model,
@@ -30,10 +30,10 @@ class SingleModel(object):
         obj_val = self.model.getAttr(grb.GRB.Attr.ObjVal)
 
         logging.info("** Final results using standalone model! **")
-        logging.info(f"Objective value: {obj_val}")
+        logging.info("Objective value: %f", obj_val)
         logging.info("The facilities at the following locations should be built:")
         for var in self.model.getVars():
             if is_non_zero(var.x):
                 facility_name = self.facility_name_to_column.inverse.get(var)
                 if facility_name:
-                    logging.info(f"   {facility_name}")
+                    logging.info("    %s", facility_name)
